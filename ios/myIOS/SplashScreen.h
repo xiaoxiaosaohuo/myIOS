@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "React/RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 @interface SplashScreen : NSObject<RCTBridgeModule>
 

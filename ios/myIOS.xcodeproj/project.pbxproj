@@ -33,13 +33,15 @@
 		2D02E4C71E0B4AEC006451C7 /* libRCTText-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3E941DF850E9000B6D8A /* libRCTText-tvOS.a */; };
 		2D02E4C81E0B4AEC006451C7 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3E991DF850E9000B6D8A /* libRCTWebSocket-tvOS.a */; };
 		2D16E6881FA4F8E400B85C8A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6891FA4F8E400B85C8A /* libReact.a */; };
+		2D3B3A582111FB4E0088F994 /* BEMAnimationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3B3A532111FB4E0088F994 /* BEMAnimationManager.m */; };
+		2D3B3A592111FB4E0088F994 /* BEMPathManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3B3A542111FB4E0088F994 /* BEMPathManager.m */; };
+		2D3B3A5A2111FB4E0088F994 /* BEMCheckBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3B3A562111FB4E0088F994 /* BEMCheckBox.m */; };
+		2D3B3A8B211201A50088F994 /* RNBEMCheckBoxManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3B3A8A211201A50088F994 /* RNBEMCheckBoxManager.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* myIOSTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* myIOSTests.m */; };
 		2DF0FFEE2056DD460020B375 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		A4CA054C2111B6FD008A7C20 /* SplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = A4CA054B2111B6FD008A7C20 /* SplashScreen.m */; };
-		A4CA054F2111B84B008A7C20 /* BEMCheckBox in Resources */ = {isa = PBXBuildFile; fileRef = A4CA054D2111B84A008A7C20 /* BEMCheckBox */; };
-		A4CA05502111B84B008A7C20 /* RNBEMCheckBox in Resources */ = {isa = PBXBuildFile; fileRef = A4CA054E2111B84A008A7C20 /* RNBEMCheckBox */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 /* End PBXBuildFile section */
 
@@ -342,13 +344,19 @@
 		2D02E47B1E0B4A5D006451C7 /* myIOS-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "myIOS-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* myIOS-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "myIOS-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D3B3A522111FB4E0088F994 /* BEMCheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BEMCheckBox.h; sourceTree = "<group>"; };
+		2D3B3A532111FB4E0088F994 /* BEMAnimationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BEMAnimationManager.m; sourceTree = "<group>"; };
+		2D3B3A542111FB4E0088F994 /* BEMPathManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BEMPathManager.m; sourceTree = "<group>"; };
+		2D3B3A552111FB4E0088F994 /* BEMAnimationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BEMAnimationManager.h; sourceTree = "<group>"; };
+		2D3B3A562111FB4E0088F994 /* BEMCheckBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BEMCheckBox.m; sourceTree = "<group>"; };
+		2D3B3A572111FB4E0088F994 /* BEMPathManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BEMPathManager.h; sourceTree = "<group>"; };
+		2D3B3A89211201A50088F994 /* RNBEMCheckBoxManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBEMCheckBoxManager.h; sourceTree = "<group>"; };
+		2D3B3A8A211201A50088F994 /* RNBEMCheckBoxManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBEMCheckBoxManager.m; sourceTree = "<group>"; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		A4CA054A2111B6FD008A7C20 /* SplashScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplashScreen.h; path = myIOS/SplashScreen.h; sourceTree = "<group>"; };
 		A4CA054B2111B6FD008A7C20 /* SplashScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplashScreen.m; path = myIOS/SplashScreen.m; sourceTree = "<group>"; };
-		A4CA054D2111B84A008A7C20 /* BEMCheckBox */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BEMCheckBox; path = myIOS/BEMCheckBox; sourceTree = "<group>"; };
-		A4CA054E2111B84A008A7C20 /* RNBEMCheckBox */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNBEMCheckBox; path = myIOS/RNBEMCheckBox; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -489,8 +497,8 @@
 		13B07FAE1A68108700A75B9A /* myIOS */ = {
 			isa = PBXGroup;
 			children = (
-				A4CA054D2111B84A008A7C20 /* BEMCheckBox */,
-				A4CA054E2111B84A008A7C20 /* RNBEMCheckBox */,
+				2D3B3A88211201A50088F994 /* RNBEMCheckBox */,
+				2D3B3A512111FB4E0088F994 /* BEMCheckBox */,
 				A4CA054A2111B6FD008A7C20 /* SplashScreen.h */,
 				A4CA054B2111B6FD008A7C20 /* SplashScreen.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -533,6 +541,30 @@
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2D3B3A512111FB4E0088F994 /* BEMCheckBox */ = {
+			isa = PBXGroup;
+			children = (
+				2D3B3A522111FB4E0088F994 /* BEMCheckBox.h */,
+				2D3B3A562111FB4E0088F994 /* BEMCheckBox.m */,
+				2D3B3A532111FB4E0088F994 /* BEMAnimationManager.m */,
+				2D3B3A542111FB4E0088F994 /* BEMPathManager.m */,
+				2D3B3A552111FB4E0088F994 /* BEMAnimationManager.h */,
+				2D3B3A572111FB4E0088F994 /* BEMPathManager.h */,
+			);
+			name = BEMCheckBox;
+			path = myIOS/BEMCheckBox;
+			sourceTree = "<group>";
+		};
+		2D3B3A88211201A50088F994 /* RNBEMCheckBox */ = {
+			isa = PBXGroup;
+			children = (
+				2D3B3A89211201A50088F994 /* RNBEMCheckBoxManager.h */,
+				2D3B3A8A211201A50088F994 /* RNBEMCheckBoxManager.m */,
+			);
+			name = RNBEMCheckBox;
+			path = myIOS/RNBEMCheckBox;
 			sourceTree = "<group>";
 		};
 		5E91572E1DD0AC6500FF2AA8 /* Products */ = {
@@ -1059,10 +1091,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4CA05502111B84B008A7C20 /* RNBEMCheckBox in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				A4CA054F2111B84B008A7C20 /* BEMCheckBox in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1127,9 +1157,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D3B3A592111FB4E0088F994 /* BEMPathManager.m in Sources */,
 				A4CA054C2111B6FD008A7C20 /* SplashScreen.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				2D3B3A5A2111FB4E0088F994 /* BEMCheckBox.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				2D3B3A582111FB4E0088F994 /* BEMAnimationManager.m in Sources */,
+				2D3B3A8B211201A50088F994 /* RNBEMCheckBoxManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
