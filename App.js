@@ -13,7 +13,7 @@ import {
   Text,
   View,
   NativeModules,
-  SliderIOS,
+  Slider,
   ActionSheetIOS,
   TouchableOpacity,
   SegmentedControlIOS,} from 'react-native';
@@ -47,6 +47,42 @@ export default class App extends Component{
       animationIndex: 2,
     };
   }
+  _onDrawTypeChange =  (event) => {
+    const drawTypeIndex = event.nativeEvent.selectedSegmentIndex;
+    this.setState({ drawTypeIndex });
+  };
+
+  _onPressAnimation = (event) => {
+    const { animationIndex } = this.state;
+    ActionSheetIOS.showActionSheetWithOptions({
+      options: Object.values(ANIMATION_TYPES),
+      title: 'Animations',
+      cancelButtonIndex: animationIndex,
+    },
+      (animationIndex) => {
+        const animationType = Object.keys(ANIMATION_TYPES)[animationIndex];
+        if (animationType === 'stroke' || animationType === 'one-stroke') {
+          this.setState({
+            drawTypeIndex: 0,
+            drawTypeSegmentEnabled: false,
+            animationIndex,
+          });
+        }
+        else if (animationType === 'fill') {
+          this.setState({
+            drawTypeIndex: 1,
+            drawTypeSegmentEnabled: false,
+            animationIndex,
+          });
+        }
+        else {
+          this.setState({
+            drawTypeSegmentEnabled: true,
+            animationIndex,
+          });
+        }
+      });
+  }
   render() {
     const {
       drawTypeIndex, boxTypeIndex,
@@ -69,8 +105,7 @@ export default class App extends Component{
     }
     return (
       <View style={styles.container}>
-        <View style={styles.sliderContainer}>
-          <Text style={styles.sliderLabel}>Animation duration</Text>
+        <View style={styles.previewContainer}>
           <Checkbox
             style={styles.checkbox}
             lineWidth={lineWidth}
@@ -84,6 +119,61 @@ export default class App extends Component{
             animationDuration={animationDuration}
           />
         </View>
+        <View style={styles.controlsContainer}>
+          <View style={styles.segmentContainer}>
+            <SegmentedControlIOS
+              style={styles.segment}
+              values={['Stroke', 'Fill']}
+              tintColor={COLORS.WHITE}
+              selectedIndex={drawTypeIndex}
+              onChange={this._onDrawTypeChange}
+              enabled={drawTypeSegmentEnabled}
+            />
+            <SegmentedControlIOS
+              style={styles.segment}
+              values={['Circle', 'Square']}
+              tintColor={COLORS.WHITE}
+              selectedIndex={boxTypeIndex}
+              onChange={(event) => {
+                this.setState({
+                  boxTypeIndex: event.nativeEvent.selectedSegmentIndex
+                });
+              }}
+            />
+          </View>
+          <View style={styles.sliderContainer}>
+            <Text style={styles.sliderLabel}>Animation duration</Text>
+            <Slider
+              style={styles.slider}
+              value={animationDuration}
+              minimumValue={0.2}
+              maximumValue={2}
+              minimumTrackTintColor={COLORS.WHITE}
+              maximumTrackTintColor={COLORS.WHITE}
+              onValueChange={(value) => this.setState({ animationDuration: value })}
+            />
+          </View>
+          <View style={styles.sliderContainer}>
+            <Text style={styles.sliderLabel}>Line width</Text>
+            <Slider
+              style={styles.slider}
+              value={lineWidth}
+              minimumValue={3}
+              maximumValue={10}
+              minimumTrackTintColor={COLORS.WHITE}
+              maximumTrackTintColor={COLORS.WHITE}
+              onValueChange={(value) => this.setState({ lineWidth: value })}
+            />
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={this._onPressAnimation}
+            >
+              <Text style={styles.buttonLabel}>Animations</Text>
+            </TouchableOpacity>
+          </View>
+          </View>
       </View>
     );
   }
@@ -92,18 +182,60 @@ export default class App extends Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  previewContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  controlsContainer: {
+    flex: 1,
+    backgroundColor: COLORS.AZURE,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  segmentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    margin: 20,
+  },
+  sliderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: 20,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    flexDirection: 'row',
+  },
+  sliderLabel: {
+    color: COLORS.WHITE,
+  },
+  buttonLabel: {
+    color: COLORS.WHITE,
+  },
+  checkbox: {
+    width: 100,
+    height: 100,
+  },
+  segment: {
+    width: 123,
+    height: 28,
+    margin: 20,
+  },
+  slider: {
+    width: 100,
+    height: 30,
+  },
+  button: {
+    width: 100,
+    height: 44,
+    borderWidth: 1,
+    borderColor: COLORS.WHITE,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
+
