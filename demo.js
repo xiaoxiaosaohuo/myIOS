@@ -1,53 +1,70 @@
-import React, { Component } from 'react';
-import { View, Image, ImageBackground, Text, ScrollView, StyleSheet } from 'react-native';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ * @flow
+ */
 
+import React, { Component } from 'react'
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View,
+  Animated,
+  Image,
+  Easing
+} from 'react-native'
 
+const timing = 4000
 
-export default class Demo extends Component {
-                 constructor(props) {
-                   super(props);
-                   this.state = {
-                       zIndex:1000
-                   };
-                 }
-                 onContentSizeChange = (contentWidth, contentHeight) => {
-                   console.log(contentHeight);
-                 };
-                 onScrollBeginDrag = ()=>{
-                    //  console.log(contentInset);
-                    this.setState({ zIndex:0 });
-                 }  
-                 onScroll = (event)=>{
-                     const y = event.nativeEvent.contentOffset.y;
-                     this.setState({ zIndex: y>0?0:10000 });
-                     console.log(event.nativeEvent.contentOffset) //垂直滚动距离        
-                }
-
-                 render() {
-                   return <ScrollView style={styles.fill} onScroll={this.onScroll} stickyHeaderIndices={[0]}>
-                       <View style={styles.header} />
-                       <View style={{ ...styles.imageWrapper, zIndex: this.state.zIndex }}>
-                         <ImageBackground source={require("./img.jpg")} style={{ height: 400 }}>
-                           <View style={styles.content}>
-                           <Text>圣诞节富兰克林开始的减肥</Text>
-                           </View>
-                         </ImageBackground>
-                       </View>
-                       <View style={styles.header} />
-                     </ScrollView>;
-                 }
-               }
-const styles = StyleSheet.create({
-  fill: {
-    flex: 1,
-    backgroundColor: "red"
-  },
-  header: {
-    height: 80,
-    backgroundColor: "red"
-  },
-  imageWrapper: {
-    flex: 1,
-    top: -20
+class Animations extends Component {
+  constructor () {
+    super()
+    this.spinValue = new Animated.Value(0)
   }
-});
+  componentDidMount () {
+    this.spin()
+  }
+  spin () {
+    this.spinValue.setValue(0)
+    Animated.timing(
+      this.spinValue,
+      {
+        toValue: 1,
+        duration: timing,
+        easing: Easing.linear
+      }
+    ).start(() => this.spin())
+  }
+  render () {
+    /* This also works, to show functions instead of strings */
+    // const getStartValue = () => '0deg'
+    // const getEndValue = () => '360deg'
+    // const spin = this.spinValue.interpolate({
+    //   inputRange: [0, 1],
+    //   outputRange: [getStartValue(), getEndValue()]
+    // })
+    const spin = this.spinValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '360deg']
+    })
+    return (
+      <View style={styles.container}>
+        <Animated.Image
+          style={{ width: 227, height: 200, transform: [{rotate: spin}] }}
+          source={{uri: 'https://s3.amazonaws.com/media-p.slid.es/uploads/alexanderfarennikov/images/1198519/reactjs.png'}}/>
+      </View>
+    )
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+})
+
+export default Animations;
+// AppRegistry.registerComponent('animations', () => animations)
