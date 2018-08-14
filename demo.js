@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react'
 import {
   AppRegistry,
@@ -11,88 +5,37 @@ import {
   Text,
   View,
   Animated,
-  Image,
-  Easing
+  Image
 } from 'react-native'
 
 class Animations extends Component {
   constructor () {
     super()
-    this.animatedValue = new Animated.Value(0)
+    this.springValue = new Animated.Value(0.3)
   }
-  componentDidMount () {
-    this.animate()
-  }
-  animate () {
-    this.animatedValue.setValue(0)
-    Animated.timing(
-      this.animatedValue,
+  spring () {
+    this.springValue.setValue(0.3)
+    Animated.spring(
+      this.springValue,
       {
         toValue: 1,
-        duration: 2000,
-        easing: Easing.linear
+        bounciness:1,
+        speed:1
+        // friction: 1,
+        // tension: 1
       }
-    ).start(() => this.animate())
+    ).start()
+  }
+  componentDidMount(){
+    this.spring()
   }
   render () {
-    const marginLeft = this.animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 300]
-    })
-    const opacity = this.animatedValue.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: [0, 1, 0]
-    })
-    const movingMargin = this.animatedValue.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: [0, 300, 0]
-    })
-    const textSize = this.animatedValue.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: [18, 32, 18]
-    })
-    const rotateX = this.animatedValue.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: ['0deg', '180deg', '0deg']
-    })
     return (
       <View style={styles.container}>
-        <Animated.View
-          style={{
-            marginLeft,
-            height: 30,
-            width: 40,
-            backgroundColor: 'red'}} />
-        <Animated.View
-          style={{
-            opacity,
-            marginTop: 10,
-            height: 30,
-            width: 40,
-            backgroundColor: 'blue'}} />
-        <Animated.View
-          style={{
-            marginLeft: movingMargin,
-            marginTop: 10,
-            height: 30,
-            width: 40,
-            backgroundColor: 'orange'}} />
-        <Animated.Text
-          style={{
-            fontSize: textSize,
-            marginTop: 10,
-            color: 'green'}} >
-            Animated Text!
-        </Animated.Text>
-        <Animated.View
-          style={{
-            transform: [{rotateX}],
-            marginTop: 50,
-            height: 30,
-            width: 40,
-            backgroundColor: 'black'}}>
-          <Text style={{color: 'white'}}>Hello from TransformX</Text>
-        </Animated.View>
+        <Text style={{marginBottom: 100}} onPress={this.spring.bind(this)}>Spring</Text>
+        <Animated.Image
+          style={{ width: 227, height: 200, transform: [{scale: this.springValue}] }}
+          source={{uri: 'https://s3.amazonaws.com/media-p.slid.es/uploads/alexanderfarennikov/images/1198519/reactjs.png'}}/>
       </View>
     )
   }
@@ -101,10 +44,10 @@ class Animations extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 150
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
-
 
 export default Animations;
 // AppRegistry.registerComponent('animations', () => animations)
