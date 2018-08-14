@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -38,11 +32,11 @@ class Animations extends Component {
         this.animatedValue[item],
         {
           toValue: 1,
-          duration: 50
+          duration: 4000
         }
       )
     })
-    Animated.sequence(animations).start()
+    Animated.stagger(10, animations).start()
   }
 
   render () {
