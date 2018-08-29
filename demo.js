@@ -1,199 +1,134 @@
-import React from 'react';
-import { StyleSheet, Text, View, LayoutAnimation, Button, TextInput, Animated, UIManager, Platform } from 'react-native';
+import React, { Component } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  LayoutAnimation,
+} from 'react-native';
 
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
-const AnimationTypeEnum = {
-  spring: true,
-  linear: true,
-  ease: true,
-  keyboard: true,
-  fade: true,
-  scaleLinear: true,
-  scaleSpring: true
-}
-const AnimationType = keyMirror(AnimationTypeEnum)
-console.log(AnimationType);
-const animationConfigs = new Map([
-  [AnimationType.spring, {
-    duration: 300,
-    update: {
-      type: LayoutAnimation.Types.spring,
-      springDamping: 0.5
-    },
-  }],
-  [AnimationType.linear, {
-    duration: 300,
-    create: {
-      initialVelocity: 1000,
-      property: LayoutAnimation.Properties.opacity,
-      type: LayoutAnimation.Types.linear
-    },
-    update: {
-      type: LayoutAnimation.Types.linear
-    }
-  }],
-  [AnimationType.ease, {
-    duration: 800,
-    update: {
-      type: LayoutAnimation.Types.easeInEaseOut
-    }
-  }],
-  [AnimationType.keyboard, {
-    duration: 10000, // Doesn't matter
-    update: {
-      type: LayoutAnimation.Types.keyboard
-    }
-  }],
-  [AnimationType.scaleLinear, {
-    duration: 600,
-    update: {
-      type: LayoutAnimation.Types.linear,
-      property: LayoutAnimation.Properties.scaleXY
-    }
-  }],
-  [AnimationType.scaleSpring, {
-    duration: 600,
-    update: {
-      type: LayoutAnimation.Types.spring,
-      property: LayoutAnimation.Properties.scaleXY,
-      springDamping: 0.6
-    }
-  }],
-  [AnimationType.fade, {
-    duration: 600,
-    update: {
-      type: LayoutAnimation.Types.linear,
-      property: LayoutAnimation.Properties.opacity
-    }
-  }]
-]);
-function keyMirror(obj) {
-  var ret = {};
-  var key;
-  !(obj instanceof Object && !Array.isArray(obj)) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'keyMirror(...): Argument must be an object.') : invariant(false) : void 0;
-  for (key in obj) {
-    if (!obj.hasOwnProperty(key)) {
-      continue;
-    }
-    ret[key] = key;
-  }
-  return ret;
+let CustomLayoutAnimation = {
+  duration: 200,
+  create: {
+    type: LayoutAnimation.Types.linear,
+    property: LayoutAnimation.Properties.opacity,
+  },
+  update: {
+    type: LayoutAnimation.Types.curveEaseInEaseOut,
+  },
 };
 
-export default class App extends React.Component {
+class AnimationExample extends Component {
 
-  constructor(props) {
+
+  constructor(props){
     super(props);
-
     this.state = {
-      animation: AnimationType.linear,
-      isViewOnTheLeft: true,
-      scaled: false,
-      keyboardVisible: false
+      index: 0,
     }
   }
 
-  render() {
+  onPress(index) {
+
+    // Uncomment to animate the next state change.
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+
+    // Or use a Custom Layout Animation
+    // LayoutAnimation.configureNext(CustomLayoutAnimation);
+
+    this.setState({ index: index });
+  }
+
+  renderButton(index) {
     return (
-      <View style={styles.container}>
-        <TextInput style={styles.hiddenTextInput} ref={ref => this.hiddenTextInput = ref} />
-        <Text style={styles.currentAnimationText}>Current animation: {this.state.animation}</Text>
-        <View style={styles.typeButtonContainer}>
-          {
-            Object.keys(AnimationType).map(animation => {
-              return (
-                <Button
-                  key={animation}
-                  title={animation.charAt(0).toUpperCase() + animation.substr(1)}
-                  onPress={() => {
-                    if (Platform.OS === 'android' && animation === AnimationType.keyboard) {
-                      alert("Keyboard is not supported on Android")
-                    } else {
-                      this.setState({animation})
-                    }
-                  }}
-                />
-              )
-            })
-          }
-        </View>
-        <View style={styles.animatedViewContainer}>
-          <Animated.View
-            style={[
-              styles.animatedView,
-              this.state.isViewOnTheLeft ?  {left: 32} : {right: 32},
-              {
-                height: this.state.scaled ? 60 : 40,
-                width: this.state.scaled ? 120 : 80,
-                opacity: this.state.faded ? 0.5 : 1
-              }
-            ]}
-          />
-        </View>
-        <Button
-          title={"Animate"}
-          onPress={() => {
-            LayoutAnimation.configureNext(animationConfigs.get(this.state.animation))
-
-            let newState = {isViewOnTheLeft: !this.state.isViewOnTheLeft}
-
-            // Other special behavior
-            switch (this.state.animation) {
-              case AnimationType.fade:
-                newState.faded = !this.state.faded
-                break
-              case AnimationType.scaleLinear:
-              case AnimationType.scaleSpring:
-                newState.scaled = !this.state.scaled
-                break
-              case AnimationType.keyboard:
-                this.hiddenTextInput.isFocused() ? this.hiddenTextInput.blur() : this.hiddenTextInput.focus()
-                break
-            }
-
-            this.setState(newState)
-          }}
-        />
-      </View>
+      <TouchableOpacity key={'button' + index} style={styles.button} onPress={() => this.onPress(index)}>
+        <Text>{index}</Text>
+      </TouchableOpacity>
     );
   }
 
-}
+  renderCircle(key) {
+    var size = 50;
+    return (
+      <View key={key} style={{ width: size, height: size, borderRadius: size / 2.0, backgroundColor: 'sandybrown', margin: 20 }} />
+    );
+  }
 
+  render() {
+
+    var leftStyle = this.state.index === 0 ? { flex: 1 } : { width: 20 };
+    var middleStyle = this.state.index === 2 ? { width: 20 } : { flex: 1 };
+    var rightStyle = { flex: 1 };
+
+    var whiteHeight = this.state.index * 80;
+
+    var circles = [];
+    for (var i = 0; i < (5 + this.state.index); i++) {
+      circles.push(this.renderCircle(i));
+    }
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.topButtons}>
+          {this.renderButton(0)}
+          {this.renderButton(1)}
+          {this.renderButton(2)}
+        </View>
+        <View style={styles.content}>
+          <View style={{ flexDirection: 'row', height: 100 }}>
+            <View style={[leftStyle, { backgroundColor: 'firebrick' }]} />
+            <View style={[middleStyle, { backgroundColor: 'seagreen' }]} />
+            <View style={[rightStyle, { backgroundColor: 'steelblue' }]} />
+          </View>
+          <View style={{ height: whiteHeight, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }} removeClippedSubviews={true}>
+            <View>
+              <Text>Stuff Goes Here</Text>
+            </View>
+          </View>
+          <View style={styles.circleContainer}>
+            {circles}
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+export default AnimationExample;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 100
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
-  currentAnimationText: {
-    fontSize: 15,
-    textAlign: "center",
-    color: "gray",
-    marginBottom: 16
+  topButtons: {
+    marginTop: 22,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: 'lightblue',
   },
-  typeButtonContainer: {
-    flexWrap: "wrap",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingHorizontal: 20,
-    marginBottom: 60
-  },
-  animatedViewContainer: {
-    width: "100%",
+  button: {
+    flex: 1,
     height: 60,
-    marginBottom: 40
+    alignSelf: 'stretch',
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 8,
   },
-  animatedView: {
-    backgroundColor: '#E0315E',
-    position: "absolute",
-    flexWrap: "wrap",
-    flexDirection: "row"
+  content: {
+    flex: 1,
+    alignSelf: 'stretch',
   },
-  hiddenTextInput: {
-    height: 0,
-    width: 0,
-    position: "absolute"
-  }
+  circleContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    flexWrap: 'wrap',
+    padding: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 });
