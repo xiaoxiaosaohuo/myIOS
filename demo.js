@@ -1,134 +1,128 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  LayoutAnimation,
-} from 'react-native';
+  ScrollView,
+  Animated,
+  SafeAreaView,
+  Dimensions
+} from "react-native";
 
-
-let CustomLayoutAnimation = {
-  duration: 200,
-  create: {
-    type: LayoutAnimation.Types.linear,
-    property: LayoutAnimation.Properties.opacity,
+const cardHeight = 250;
+const cardTitle = 45;
+const cardPadding = 10;
+const { height } = Dimensions.get("window");
+const cards = [
+  {
+    name: "Shot",
+    color: "#a9d0b6",
+    price: "30 CHF"
   },
-  update: {
-    type: LayoutAnimation.Types.curveEaseInEaseOut,
+  {
+    name: "Juice",
+    color: "#e9bbd1",
+    price: "64 CHF"
   },
-};
-
-class AnimationExample extends Component {
-
-
-  constructor(props){
-    super(props);
-    this.state = {
-      index: 0,
-    }
+  {
+    name: "Mighty Juice",
+    color: "#eba65c",
+    price: "80 CHF"
+  },
+  {
+    name: "Sandwich",
+    color: "#95c3e4",
+    price: "85 CHF"
+  },
+  {
+    name: "Combi",
+    color: "#1c1c1c",
+    price: "145 CHF"
+  },
+  {
+    name: "Signature",
+    color: "#a390bc",
+    price: "92 CHF"
+  },
+  {
+    name: "Coffee",
+    color: "#fef2a0",
+    price: "47 CHF"
   }
+];
 
-  onPress(index) {
-
-    // Uncomment to animate the next state change.
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-
-    // Or use a Custom Layout Animation
-    // LayoutAnimation.configureNext(CustomLayoutAnimation);
-
-    this.setState({ index: index });
-  }
-
-  renderButton(index) {
-    return (
-      <TouchableOpacity key={'button' + index} style={styles.button} onPress={() => this.onPress(index)}>
-        <Text>{index}</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  renderCircle(key) {
-    var size = 50;
-    return (
-      <View key={key} style={{ width: size, height: size, borderRadius: size / 2.0, backgroundColor: 'sandybrown', margin: 20 }} />
-    );
-  }
+export default class App extends React.Component {
+  state = {
+    y: new Animated.Value(0)
+  };
 
   render() {
-
-    var leftStyle = this.state.index === 0 ? { flex: 1 } : { width: 20 };
-    var middleStyle = this.state.index === 2 ? { width: 20 } : { flex: 1 };
-    var rightStyle = { flex: 1 };
-
-    var whiteHeight = this.state.index * 80;
-
-    var circles = [];
-    for (var i = 0; i < (5 + this.state.index); i++) {
-      circles.push(this.renderCircle(i));
-    }
-
+    const { y } = this.state;
     return (
-      <View style={styles.container}>
-        <View style={styles.topButtons}>
-          {this.renderButton(0)}
-          {this.renderButton(1)}
-          {this.renderButton(2)}
+      <SafeAreaView style={styles.root}>
+        <View style={styles.container}>
+          <View style={StyleSheet.absoluteFill}>
+            {cards.map((card, i) => {
+              const inputRange = [-cardHeight, 0];
+              const outputRange = [
+                cardHeight * i,
+                (cardHeight - cardTitle) * -i
+              ];
+              if (i > 0) {
+                inputRange.push(cardPadding * i);
+                outputRange.push((cardHeight - cardPadding) * -i);
+              }
+              const translateY = y.interpolate({
+                inputRange,
+                outputRange,
+                extrapolateRight: "clamp"
+              });
+              return (
+                <Animated.View
+                  key={card.name}
+                  style={{ transform: [{ translateY }] }}
+                >
+                  <View
+                    style={[styles.card, { backgroundColor: card.color }]}
+                  />
+                </Animated.View>
+              );
+            })}
+          </View>
+          <Animated.ScrollView
+            scrollEventThrottle={16}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            onScroll={Animated.event(
+              [
+                {
+                  nativeEvent: {
+                    contentOffset: { y }
+                  }
+                }
+              ],
+              { useNativeDriver: true }
+            )}
+          />
         </View>
-        <View style={styles.content}>
-          <View style={{ flexDirection: 'row', height: 100 }}>
-            <View style={[leftStyle, { backgroundColor: 'firebrick' }]} />
-            <View style={[middleStyle, { backgroundColor: 'seagreen' }]} />
-            <View style={[rightStyle, { backgroundColor: 'steelblue' }]} />
-          </View>
-          <View style={{ height: whiteHeight, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }} removeClippedSubviews={true}>
-            <View>
-              <Text>Stuff Goes Here</Text>
-            </View>
-          </View>
-          <View style={styles.circleContainer}>
-            {circles}
-          </View>
-        </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }
-export default AnimationExample;
+
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    margin: 16
+  },
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  topButtons: {
-    marginTop: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'stretch',
-    backgroundColor: 'lightblue',
-  },
-  button: {
-    flex: 1,
-    height: 60,
-    alignSelf: 'stretch',
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 8,
+    flex: 1
   },
   content: {
-    flex: 1,
-    alignSelf: 'stretch',
+    height: height * 2
   },
-  circleContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    flexWrap: 'wrap',
-    padding: 30,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
+  card: {
+    height: cardHeight,
+    borderRadius: 10
+  }
 });
