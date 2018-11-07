@@ -1,141 +1,140 @@
 import React, { Component } from "react";
 import {
   Animated,
+  ImageBackground,
   Platform,
-  StatusBar,
   StyleSheet,
-  Text,
   View,
-  RefreshControl
+  Text,
+  ListView
 } from "react-native";
 
-const HEADER_MAX_HEIGHT = 300;
-const HEADER_MIN_HEIGHT = Platform.OS === "ios" ? 60 : 73;
-const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+import data from "./data";
 
-export default class App extends Component {
+const NAVBAR_HEIGHT = 64;
+const STATUS_BAR_HEIGHT = Platform.select({ ios: 20, android: 24 });
+
+const AnimatedListView = Animated.createAnimatedComponent(ListView);
+
+class App extends Component {
   constructor(props) {
     super(props);
 
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+
+    const scrollAnim = new Animated.Value(0);
+    const offsetAnim = new Animated.Value(0);
+
     this.state = {
-      scrollY: new Animated.Value(
-        // iOS has negative initial scroll value because content inset...
-        Platform.OS === "ios" ? -HEADER_MAX_HEIGHT : 0
-      ),
-      refreshing: false
+      dataSource: dataSource.cloneWithRows(data),
+      scrollAnim,
+      offsetAnim,
+      clampedScroll: Animated.diffClamp(
+        Animated.add(
+          scrollAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+            extrapolateLeft: "clamp"
+          }),
+          offsetAnim
+        ),
+        0,
+        NAVBAR_HEIGHT - STATUS_BAR_HEIGHT
+      )
     };
   }
 
-  _renderScrollViewContent() {
-    const data = Array.from({ length: 30 });
-    return (
-      <View style={styles.scrollViewContent}>
-        {data.map((_, i) => (
-          <View key={i} style={styles.row}>
-            <Text>{i}</Text>
-          </View>
-        ))}
-      </View>
-    );
+  _clampedScrollValue = 0;
+  _offsetValue = 0;
+  _scrollValue = 0;
+
+  componentDidMount() {
+    this.state.scrollAnim.addListener(({ value }) => {
+      const diff = value - this._scrollValue;
+      this._scrollValue = value;
+      this._clampedScrollValue = Math.min(
+        Math.max(this._clampedScrollValue + diff, 0),
+        NAVBAR_HEIGHT - STATUS_BAR_HEIGHT
+      );
+    });
+    this.state.offsetAnim.addListener(({ value }) => {
+      this._offsetValue = value;
+    });
   }
 
+  componentWillUnmount() {
+    this.state.scrollAnim.removeAllListeners();
+    this.state.offsetAnim.removeAllListeners();
+  }
+
+  _onScrollEndDrag = () => {
+    this._scrollEndTimer = setTimeout(this._onMomentumScrollEnd, 250);
+  };
+
+  _onMomentumScrollBegin = () => {
+    clearTimeout(this._scrollEndTimer);
+  };
+
+  _onMomentumScrollEnd = () => {
+    const toValue =
+      this._scrollValue > NAVBAR_HEIGHT &&
+      this._clampedScrollValue > (NAVBAR_HEIGHT - STATUS_BAR_HEIGHT) / 2
+        ? this._offsetValue + NAVBAR_HEIGHT
+        : this._offsetValue - NAVBAR_HEIGHT;
+
+    Animated.timing(this.state.offsetAnim, {
+      toValue,
+      duration: 350,
+      useNativeDriver: true
+    }).start();
+  };
+
+  _renderRow = (rowData, sectionId, rowId) => {
+    return <ImageBackground key={rowId} style={styles.row} source={{ uri: rowData.image }} resizeMode="cover">
+        <Text style={styles.rowText}>{rowData.title}</Text>
+      </ImageBackground>;
+  };
+
   render() {
-    // Because of content inset the scroll value will be negative on iOS so bring
-    // it back to 0.
-    const scrollY = Animated.add(
-      this.state.scrollY,
-      Platform.OS === "ios" ? HEADER_MAX_HEIGHT : 0
-    );
-    const headerTranslate = scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE],
-      outputRange: [0, -HEADER_SCROLL_DISTANCE],
-      extrapolate: "clamp"
-    });
+    const { clampedScroll } = this.state;
 
-    const imageOpacity = scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
-      outputRange: [1, 1, 0],
+    const navbarTranslate = clampedScroll.interpolate({
+      inputRange: [0, NAVBAR_HEIGHT - STATUS_BAR_HEIGHT],
+      outputRange: [0, -(NAVBAR_HEIGHT - STATUS_BAR_HEIGHT)],
       extrapolate: "clamp"
     });
-    const imageTranslate = scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE],
-      outputRange: [0, 100],
-      extrapolate: "clamp"
-    });
-
-    const titleScale = scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
-      outputRange: [1, 1, 0.8],
-      extrapolate: "clamp"
-    });
-    const titleTranslate = scrollY.interpolate({
-      inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
-      outputRange: [0, 0, -8],
+    const navbarOpacity = clampedScroll.interpolate({
+      inputRange: [0, NAVBAR_HEIGHT - STATUS_BAR_HEIGHT],
+      outputRange: [1, 0],
       extrapolate: "clamp"
     });
 
     return (
       <View style={styles.fill}>
-        <StatusBar
-          translucent
-          barStyle="light-content"
-          backgroundColor="rgba(0, 0, 0, 0.251)"
-        />
-        <Animated.ScrollView
-          style={styles.fill}
+        <AnimatedListView
+          contentContainerStyle={styles.contentContainer}
+          dataSource={this.state.dataSource}
+          renderRow={this._renderRow}
           scrollEventThrottle={1}
+          onMomentumScrollBegin={this._onMomentumScrollBegin}
+          onMomentumScrollEnd={this._onMomentumScrollEnd}
+          onScrollEndDrag={this._onScrollEndDrag}
           onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }],
+            [{ nativeEvent: { contentOffset: { y: this.state.scrollAnim } } }],
             { useNativeDriver: true }
           )}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={() => {
-                this.setState({ refreshing: true });
-                setTimeout(() => this.setState({ refreshing: false }), 1000);
-              }}
-              // Android offset for RefreshControl
-              progressViewOffset={HEADER_MAX_HEIGHT}
-            />
-          }
-          // iOS offset for RefreshControl
-          contentInset={{
-            top: HEADER_MAX_HEIGHT
-          }}
-          contentOffset={{
-            y: -HEADER_MAX_HEIGHT
-          }}
-        >
-          {this._renderScrollViewContent()}
-        </Animated.ScrollView>
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            styles.header,
-            { transform: [{ translateY: headerTranslate }] }
-          ]}
-        >
-          <Animated.Image
-            style={[
-              styles.backgroundImage,
-              {
-                opacity: imageOpacity,
-                transform: [{ translateY: imageTranslate }]
-              }
-            ]}
-            source={require("./img.jpg")}
-          />
-        </Animated.View>
+        />
         <Animated.View
           style={[
-            styles.bar,
-            {
-              transform: [{ scale: titleScale }, { translateY: titleTranslate }]
-            }
+            styles.navbar,
+            { transform: [{ translateY: navbarTranslate }] }
           ]}
         >
-          <Text style={styles.title}>Title</Text>
+          <Animated.Text style={[styles.title, { opacity: navbarOpacity }]}>
+            PLACES
+          </Animated.Text>
         </Animated.View>
       </View>
     );
@@ -146,51 +145,37 @@ const styles = StyleSheet.create({
   fill: {
     flex: 1
   },
-  content: {
-    flex: 1
-  },
-  header: {
+  navbar: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#03A9F4",
-    overflow: "hidden",
-    height: HEADER_MAX_HEIGHT
-  },
-  backgroundImage: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    width: null,
-    height: HEADER_MAX_HEIGHT,
-    resizeMode: "cover"
-  },
-  bar: {
-    backgroundColor: "transparent",
-    marginTop: Platform.OS === "ios" ? 28 : 38,
-    height: 32,
     alignItems: "center",
+    backgroundColor: "white",
+    borderBottomColor: "#dedede",
+    borderBottomWidth: 1,
+    height: NAVBAR_HEIGHT,
     justifyContent: "center",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0
+    paddingTop: STATUS_BAR_HEIGHT
+  },
+  contentContainer: {
+    paddingTop: NAVBAR_HEIGHT
   },
   title: {
-    color: "white",
-    fontSize: 18
-  },
-  scrollViewContent: {
-    // iOS uses content inset, which acts like padding.
-    paddingTop: Platform.OS !== "ios" ? HEADER_MAX_HEIGHT : 0
+    color: "#333333"
   },
   row: {
-    height: 40,
-    margin: 16,
-    backgroundColor: "#D3D3D3",
-    alignItems: "center",
-    justifyContent: "center"
+    height: 300,
+    width: null,
+    marginBottom: 1,
+    padding: 16,
+    backgroundColor: "transparent"
+  },
+  rowText: {
+    color: "white",
+    fontSize: 18
   }
 });
+
+
+export default App;
