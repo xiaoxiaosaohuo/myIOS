@@ -1,53 +1,108 @@
-import React, { Component } from 'react';
-import { View, Image, ImageBackground, Text, ScrollView, StyleSheet } from 'react-native';
+import React from 'react';
+import { InteractionManager, StyleSheet, Text, View } from 'react-native';
+import { SharedElementRenderer } from 'react-native-motion';
 
+import List from './src/screens/List/List';
+import Detail from './src/screens/Detail/Detail';
+import ToolbarBackground from './src/screens/Detail/ToolbarBackground';
 
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-export default class Demo extends Component {
-                 constructor(props) {
-                   super(props);
-                   this.state = {
-                       zIndex:1000
-                   };
-                 }
-                 onContentSizeChange = (contentWidth, contentHeight) => {
-                   console.log(contentHeight);
-                 };
-                 onScrollBeginDrag = ()=>{
-                    //  console.log(contentInset);
-                    this.setState({ zIndex:0 });
-                 }  
-                 onScroll = (event)=>{
-                     const y = event.nativeEvent.contentOffset.y;
-                     this.setState({ zIndex: y>0?0:10000 });
-                     console.log(event.nativeEvent.contentOffset) //垂直滚动距离        
-                }
-
-                 render() {
-                   return <ScrollView style={styles.fill} onScroll={this.onScroll} stickyHeaderIndices={[0]}>
-                       <View style={styles.header} />
-                       <View style={{ ...styles.imageWrapper, zIndex: this.state.zIndex }}>
-                         <ImageBackground source={require("./img.jpg")} style={{ height: 400 }}>
-                           <View style={styles.content}>
-                           <Text>圣诞节富兰克林开始的减肥</Text>
-                           </View>
-                         </ImageBackground>
-                       </View>
-                       <View style={styles.header} />
-                     </ScrollView>;
-                 }
-               }
-const styles = StyleSheet.create({
-  fill: {
-    flex: 1,
-    backgroundColor: "red"
-  },
-  header: {
-    height: 80,
-    backgroundColor: "red"
-  },
-  imageWrapper: {
-    flex: 1,
-    top: -20
+    this.state = {
+      selectedItem: null,
+      // phase of animation
+      // phase-0:
+      // default
+      //
+      // phase-1:
+      // hide list toolbar, hide list bottom bar, show toolbar background and move item
+      //
+      // phase-2:
+      // show detail toolbar, show detail bottom bar, show details of item
+      //
+      // phase-3
+      // hide details of item
+      //
+      // phase-4
+      // hide detail toolbar, hide detail bootom bar, move item back to scrool view
+      phase: 'phase-0',
+    };
   }
+  onItemPressed = item => {
+    this.setState({
+      phase: 'phase-1',
+      selectedItem: item,
+    });
+  };
+  onBackPressed = () => {
+    this.setState({
+      phase: 'phase-3',
+    });
+  };
+  onSharedElementMovedToDestination = () => {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({
+        phase: 'phase-2',
+      });
+    });
+  };
+  onSharedElementMovedToSource = () => {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({
+        selectedItem: null,
+        phase: 'phase-0',
+      });
+    });
+  };
+  renderPage() {
+    const { selectedItem, position, detailItem, phase } = this.state;
+
+    return (
+      <View style={{ flex: 1 }}>
+        <List
+          selectedItem={selectedItem}
+          onItemPress={this.onItemPressed}
+          phase={phase}
+        />
+        <Detail
+          phase={phase}
+          selectedItem={selectedItem}
+          onBackPress={this.onBackPressed}
+          onSharedElementMovedToDestination={
+            this.onSharedElementMovedToDestination
+          }
+          onSharedElementMovedToSource={this.onSharedElementMovedToSource}
+        />
+      </View>
+    );
+  }
+  render() {
+    const {
+      selectedItem,
+      goToDetail,
+      position,
+      detailItem,
+      goBackRequested,
+      phase,
+    } = this.state;
+
+    return (
+      <SharedElementRenderer>
+        <View style={styles.container}>
+          <ToolbarBackground
+            isHidden={phase !== 'phase-1' && phase !== 'phase-2'}
+          />
+          {this.renderPage()}
+        </View>
+      </SharedElementRenderer>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
 });
