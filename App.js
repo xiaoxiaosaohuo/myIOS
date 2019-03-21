@@ -11,6 +11,7 @@ import {
   Platform, 
   StyleSheet,
   Text,
+  FlatList,
   View,
   NativeModules,
   Slider,
